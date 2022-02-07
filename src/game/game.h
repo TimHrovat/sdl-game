@@ -8,7 +8,6 @@ class Game {
   private:
     bool isRunning;
     SDL_Window *window;
-    SDL_Renderer *renderer;
 
   public:
     Game();
@@ -22,4 +21,6 @@ class Game {
     void clean();
 
     bool running();
+
+    static SDL_Renderer *renderer;
 };

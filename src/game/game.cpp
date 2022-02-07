@@ -1,9 +1,10 @@
 #include "Game.h"
+#include "../src/gameObject/GameObject.h"
 #include "../src/textureManager/TextureManager.h"
 
-SDL_Texture *playerTexture;          //! remove
-SDL_Rect srcrect = {0, 0, 38, 38};   //! remove
-SDL_Rect dstrect = {10, 10, 38, 38}; //! remove
+GameObject *player;
+
+SDL_Renderer *Game::renderer = NULL;
 
 Game::Game() {
 }
@@ -14,7 +15,9 @@ Game::~Game() {
 void Game::init(const char *title, int xpos, int ypos, int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
         std::cout << "SDL initialized!..." << std::endl;
-        IMG_Init(IMG_INIT_PNG);
+
+        IMG_Init(IMG_INIT_PNG); // initializes img libary
+
         // Creates a SDL window and checks if it's created successfully
         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
         if (window) {
@@ -28,7 +31,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
             std::cout << "Renderer successfully created!" << std::endl;
         }
 
-        playerTexture = TextureManager::LoadTexture("assets/images/player/player_sheet.png", renderer);
+        player = new GameObject("../assets/images/player/player_sheet.png", 0, 0);
 
         isRunning = true;
     } else {
@@ -49,11 +52,12 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
+    player->Update();
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, playerTexture, &srcrect, &dstrect);
+    player->Render();
     // stuff that needs rendering goes here
     SDL_RenderPresent(renderer);
 }
