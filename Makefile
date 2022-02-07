@@ -12,7 +12,7 @@ CXXFLAGS	:= -std=c++17 -Wall -Wextra -g
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
-LFLAGS = -lsdl2
+LFLAGS = -lsdl2 -lSDL2_image
 
 # define output directory
 OUTPUT	:= output
@@ -48,7 +48,7 @@ endif
 INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 # define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) -L$(shell brew --prefix)/opt/sdl2/lib
+LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) -L$(shell brew --prefix)/opt/sdl2/lib -L$(shell brew --prefix)/opt/sdl2_image/lib
 
 # define the C source files
 SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS)))
