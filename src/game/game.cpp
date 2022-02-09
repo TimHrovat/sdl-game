@@ -1,10 +1,14 @@
 #include "Game.h"
+#include "../src/components/ECS.h"
+#include "../src/components/components.h"
 #include "../src/gameObject/GameObject.h"
 #include "../src/textureManager/TextureManager.h"
 
 GameObject *player;
 
 SDL_Renderer *Game::renderer = NULL;
+Manager manager;
+auto &newPlayer(manager.addEntity());
 
 Game::Game() {
 }
@@ -33,6 +37,9 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 
         player = new GameObject("../assets/images/player/player_sheet.png", 0, 0);
 
+        newPlayer.addComponent<PositionComponent>();
+        newPlayer.getComponent<PositionComponent>().setPos(500, 500);
+
         isRunning = true;
     } else {
         isRunning = false;
@@ -53,6 +60,8 @@ void Game::handleEvents() {
 
 void Game::update() {
     player->Update();
+    manager.update();
+    std::cout << newPlayer.getComponent<PositionComponent>().x() << "," << newPlayer.getComponent<PositionComponent>().y() << std::endl;
 }
 
 void Game::render() {
