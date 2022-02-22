@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "../ECS/Components.h"
+#include "../collision/Collision.h"
 #include "../textureManager/TextureManager.h"
 #include "../vector2D/Vector2D.h"
 
@@ -8,7 +9,14 @@ Manager manager;
 SDL_Renderer *Game::renderer = NULL;
 SDL_Event Game::event;
 
+std::vector<CollisionComponent *> Game::collisions;
+
 auto &player(manager.addEntity());
+auto &wall(manager.addEntity());
+
+auto &tile0(manager.addEntity());
+auto &tile1(manager.addEntity());
+auto &tile2(manager.addEntity());
 
 Game::Game() {
 }
@@ -35,9 +43,19 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
             std::cout << "Renderer successfully created!" << std::endl;
         }
 
-        player.addComponent<TransformComponent>();
-        player.addComponent<SpriteComponent>("../assets/images/player/player_sheet.png");
+        tile0.addComponent<TileComponent>(200, 100, 60, 60, 0);
+        tile0.addComponent<CollisionComponent>("ground");
+        tile1.addComponent<TileComponent>(260, 200, 60, 60, 0);
+        tile2.addComponent<TileComponent>(320, 300, 60, 60, 0);
+
+        player.addComponent<TransformComponent>(1.5);
+        player.addComponent<SpriteComponent>("../assets/player/player_sheet.png");
         player.addComponent<KeyboardHandler>();
+        player.addComponent<CollisionComponent>("player");
+
+        wall.addComponent<TransformComponent>(300.0f, 300.0f, 300, 20, 1);
+        wall.addComponent<SpriteComponent>("../assets/background/background.bmp");
+        wall.addComponent<CollisionComponent>("wall");
 
         isRunning = true;
     } else {
@@ -60,6 +78,10 @@ void Game::handleEvents() {
 void Game::update() {
     manager.refresh();
     manager.update();
+
+    for (auto cc : collisions) {
+        Collision::AABB(player.getComponent<CollisionComponent>(), *cc);
+    }
 }
 
 void Game::render() {

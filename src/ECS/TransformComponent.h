@@ -8,11 +8,19 @@ class TransformComponent : public Component {
     Vector2D position;
     Vector2D velocity;
 
+    int height = 40;
+    int width = 40;
+    float scale = 1.0f;
+
     int speed = 3;
 
     TransformComponent() {
-        position.x = 0.0f;
-        position.y = 0.0f;
+        position.Zero();
+    }
+
+    TransformComponent(float scale) {
+        position.Zero();
+        this->scale = scale;
     }
 
     TransformComponent(float x, float y) {
@@ -20,9 +28,16 @@ class TransformComponent : public Component {
         position.y = y;
     }
 
+    TransformComponent(float x, float y, int h, int w, int scale) {
+        position.x = x;
+        position.y = y;
+        height = h;
+        width = w;
+        this->scale = scale;
+    }
+
     void init() override {
-        velocity.x = 0.0f;
-        velocity.y = 0.0f;
+        velocity.Zero();
     }
 
     void update() override {

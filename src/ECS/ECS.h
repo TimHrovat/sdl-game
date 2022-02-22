@@ -62,15 +62,15 @@ class Entity {
     void destroy() { active = false; }
 
     template <class T>
-    bool hasComponent() const { return componentBitSet[getComponentTypeID<T>]; }
+    bool hasComponent() const { return componentBitSet[getComponentTypeID<T>()]; }
 
     // this function adds a component to an entity
     template <class T, class... TArgs>
-    T &addComponent(TArgs &&...mArgs) { // variadic function - because component may get multiple arguments
+    T &addComponent(TArgs &&...mArgs) {             // variadic function - because component may get multiple arguments
         T *c(new T(std::forward<TArgs>(mArgs)...)); // creates new instance of component
-        c->entity = this; // connects a component to an entity
-        std::unique_ptr<Component> uPtr{c}; //assigns a unique pointer to a component
-        components.emplace_back(std::move(uPtr)); // adds a component to the end of a vector
+        c->entity = this;                           // connects a component to an entity
+        std::unique_ptr<Component> uPtr{c};         // assigns a unique pointer to a component
+        components.emplace_back(std::move(uPtr));   // adds a component to the end of a vector
 
         componentArray[getComponentTypeID<T>()] = c;
         componentBitSet[getComponentTypeID<T>()] = true;
