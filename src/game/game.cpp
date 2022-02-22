@@ -1,14 +1,14 @@
 #include "Game.h"
-#include "../src/components/ECS.h"
-#include "../src/components/components.h"
-#include "../src/gameObject/GameObject.h"
-#include "../src/textureManager/TextureManager.h"
+#include "../ECS/Components.h"
+#include "../textureManager/TextureManager.h"
+#include "../vector2D/Vector2D.h"
 
-GameObject *player;
+Manager manager;
 
 SDL_Renderer *Game::renderer = NULL;
-Manager manager;
-auto &newPlayer(manager.addEntity());
+SDL_Event Game::event;
+
+auto &player(manager.addEntity());
 
 Game::Game() {
 }
@@ -35,10 +35,9 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
             std::cout << "Renderer successfully created!" << std::endl;
         }
 
-        player = new GameObject("../assets/images/player/player_sheet.png", 0, 0);
-
-        newPlayer.addComponent<PositionComponent>();
-        newPlayer.getComponent<PositionComponent>().setPos(500, 500);
+        player.addComponent<TransformComponent>();
+        player.addComponent<SpriteComponent>("../assets/images/player/player_sheet.png");
+        player.addComponent<KeyboardHandler>();
 
         isRunning = true;
     } else {
@@ -47,7 +46,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 }
 
 void Game::handleEvents() {
-    SDL_Event event;
+
     SDL_PollEvent(&event);
     switch (event.type) {
         case SDL_QUIT:
@@ -59,15 +58,14 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    player->Update();
+    manager.refresh();
     manager.update();
-    std::cout << newPlayer.getComponent<PositionComponent>().x() << "," << newPlayer.getComponent<PositionComponent>().y() << std::endl;
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
-    player->Render();
     // stuff that needs rendering goes here
+    manager.draw();
     SDL_RenderPresent(renderer);
 }
 
