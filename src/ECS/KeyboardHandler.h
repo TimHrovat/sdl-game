@@ -3,15 +3,19 @@
 #include "../game/Game.h"
 #include "Components.h"
 #include "ECS.h"
+#include "SpriteComponent.h"
 #include "TransformComponent.h" // no touchy - doesn't work without that shit
 #include <iostream>
 
 class KeyboardHandler : public Component {
+
   public:
     TransformComponent *transform;
+    SpriteComponent *sprite;
 
     void init() override {
         transform = &entity->getComponent<TransformComponent>();
+        sprite = &entity->getComponent<SpriteComponent>();
     }
 
     void update() override {
@@ -49,7 +53,6 @@ class KeyboardHandler : public Component {
                 case SDLK_d:
                     transform->velocity.x = 0;
                     break;
-
                 default:
                     break;
             }

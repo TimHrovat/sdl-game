@@ -1,22 +1,34 @@
 #include "Game.h"
 #include "../ECS/Components.h"
 #include "../collision/Collision.h"
+#include "../map/Map.h"
 #include "../textureManager/TextureManager.h"
 #include "../vector2D/Vector2D.h"
 
 Manager manager;
+Map *map;
 
 SDL_Renderer *Game::renderer = NULL;
 SDL_Event Game::event;
+SDL_Rect Game::camera = {0, 0, 1080, 720};
 
 std::vector<CollisionComponent *> Game::collisions;
 
 auto &player(manager.addEntity());
 auto &wall(manager.addEntity());
 
-auto &tile0(manager.addEntity());
-auto &tile1(manager.addEntity());
-auto &tile2(manager.addEntity());
+enum groupLabels : std::size_t {
+    groupMap,
+    groupPlayers,
+    groupEnemies,
+    groupColliders,
+    groupBackground
+};
+
+auto &tiles(manager.getGroup(groupMap));
+auto &players(manager.getGroup(groupPlayers));
+auto &enemies(manager.getGroup(groupEnemies));
+auto &background(manager.getGroup(groupBackground));
 
 Game::Game() {
 }
@@ -43,19 +55,19 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
             std::cout << "Renderer successfully created!" << std::endl;
         }
 
-        tile0.addComponent<TileComponent>(200, 100, 60, 60, 0);
-        tile0.addComponent<CollisionComponent>("ground");
-        tile1.addComponent<TileComponent>(260, 200, 60, 60, 0);
-        tile2.addComponent<TileComponent>(320, 300, 60, 60, 0);
+        map = new Map();
 
-        player.addComponent<TransformComponent>(1.5);
-        player.addComponent<SpriteComponent>("../assets/player/player_sheet.png");
+        player.addComponent<TransformComponent>(40.0f, 600.0f - 439 * 0.2f + 1, 439, 232, 0.2);
+        player.addComponent<SpriteComponent>();
         player.addComponent<KeyboardHandler>();
         player.addComponent<CollisionComponent>("player");
+        player.addComponent<AnimationComponent>();
+        player.addGroup(groupPlayers);
 
         wall.addComponent<TransformComponent>(300.0f, 300.0f, 300, 20, 1);
         wall.addComponent<SpriteComponent>("../assets/background/background.bmp");
         wall.addComponent<CollisionComponent>("wall");
+        wall.addGroup(groupMap);
 
         isRunning = true;
     } else {
@@ -82,12 +94,31 @@ void Game::update() {
     for (auto cc : collisions) {
         Collision::AABB(player.getComponent<CollisionComponent>(), *cc);
     }
+
+    camera.x = player.getComponent<TransformComponent>().position.x - 300;
+    camera.y = player.getComponent<TransformComponent>().position.y - 600;
+
+    if (camera.x < 0) camera.x = 0;
+    if (camera.y < 0) camera.y = 0;
+    if (camera.x > camera.w) camera.x = camera.w;
+    if (camera.y > camera.h) camera.y = camera.h;
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
     // stuff that needs rendering goes here
-    manager.draw();
+    for (auto &b : background) {
+        b->draw();
+    }
+    for (auto &t : tiles) {
+        t->draw();
+    }
+    for (auto &p : players) {
+        p->draw();
+    }
+    for (auto &e : enemies) {
+        e->draw();
+    }
     SDL_RenderPresent(renderer);
 }
 
@@ -100,4 +131,10 @@ void Game::clean() {
 
 bool Game::running() {
     return isRunning;
+}
+
+void Game::AddTile(int id, int x, int y, int w, int h) {
+    auto &tile(manager.addEntity());
+    tile.addComponent<TileComponent>(x, y, w, h, id);
+    tile.addGroup(groupMap);
 }

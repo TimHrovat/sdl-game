@@ -10,6 +10,8 @@ class TileComponent : public Component {
     TransformComponent *transform;
     SpriteComponent *sprite;
 
+    Vector2D position;
+
     SDL_Rect tileRect;
     int tileID;
     char *path;
@@ -23,9 +25,12 @@ class TileComponent : public Component {
         tileRect.h = h;
         tileID = id;
 
+        position.x = x;
+        position.y = y;
+
         switch (tileID) {
             case 0:
-                path = "../assets/background/ground.png";
+                path = (char *)"../assets/background/ground.png";
                 break;
             default:
                 break;
@@ -33,10 +38,17 @@ class TileComponent : public Component {
     }
 
     void init() override {
-        entity->addComponent<TransformComponent>((float)tileRect.x, (float)tileRect.y, tileRect.w, tileRect.h, 1);
+        entity->addComponent<TransformComponent>((float)tileRect.x, (float)tileRect.y, tileRect.h, tileRect.w, 1.0f);
         transform = &entity->getComponent<TransformComponent>();
 
         entity->addComponent<SpriteComponent>(path);
         sprite = &entity->getComponent<SpriteComponent>();
+
+        entity->addComponent<CollisionComponent>("tile");
+    }
+
+    void update() override {
+        transform->position.x = position.x - Game::camera.x;
+        transform->position.y = position.y - Game::camera.y;
     }
 };

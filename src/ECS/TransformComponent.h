@@ -2,6 +2,7 @@
 
 #include "../vector2D/Vector2D.h"
 #include "Components.h"
+#include <cmath>
 
 class TransformComponent : public Component {
   public:
@@ -12,14 +13,15 @@ class TransformComponent : public Component {
     int width = 40;
     float scale = 1.0f;
 
-    int speed = 3;
+    int speed = 6;
 
     TransformComponent() {
         position.Zero();
     }
 
     TransformComponent(float scale) {
-        position.Zero();
+        position.x = 200;
+        position.y = 510;
         this->scale = scale;
     }
 
@@ -28,7 +30,7 @@ class TransformComponent : public Component {
         position.y = y;
     }
 
-    TransformComponent(float x, float y, int h, int w, int scale) {
+    TransformComponent(float x, float y, int h, int w, float scale) {
         position.x = x;
         position.y = y;
         height = h;

@@ -9,24 +9,28 @@
 
 class Component;
 class Entity;
+class Manager;
 
 using ComponentID = std::size_t;
+using Group = std::size_t;
 
-inline ComponentID getComponentTypeID() {
-    static ComponentID lastID = 0;
+inline ComponentID getNewComponentTypeID() {
+    static ComponentID lastID = 0u;
     return lastID++;
 }
 
 template <class T>
 inline ComponentID getComponentTypeID() noexcept {
-    static ComponentID typeID = getComponentTypeID();
+    static ComponentID typeID = getNewComponentTypeID();
     return typeID;
 }
 
 // entity has the maximum of 32 components attached to it
 constexpr std::size_t maxComponents = 32; // constexpr - evaluated at compile time, size_t - unsingned type
+constexpr std::size_t maxGroups = 32;
 
 using ComponentBitSet = std::bitset<maxComponents>;
+using GroupBitSet = std::bitset<maxGroups>;
 using ComponentArray = std::array<Component *, maxComponents>;
 
 class Component {
@@ -43,13 +47,17 @@ class Component {
 
 class Entity {
   private:
+    Manager &manager;
     bool active = true;
     std::vector<std::unique_ptr<Component>> components; // list (vector) of components of specific entity
 
     ComponentArray componentArray;
     ComponentBitSet componentBitSet;
+    GroupBitSet groupBitSet;
 
   public:
+    Entity(Manager &mManager) : manager(mManager) {}
+
     void update() {
         for (auto &c : components)
             c->update(); // updates each component
@@ -58,11 +66,26 @@ class Entity {
         for (auto &c : components)
             c->draw(); // draws each component
     }
-    bool isActive() const { return active; }
-    void destroy() { active = false; }
+    bool isActive() const {
+        return active;
+    }
+    void destroy() {
+        active = false;
+    }
 
     template <class T>
-    bool hasComponent() const { return componentBitSet[getComponentTypeID<T>()]; }
+    bool hasComponent() const {
+        return componentBitSet[getComponentTypeID<T>()];
+    }
+
+    bool hasGroup(Group mGroup) {
+        return groupBitSet[mGroup];
+    }
+
+    void addGroup(Group mGroup);
+    void delGroup(Group mGroup) {
+        groupBitSet[mGroup] = false;
+    }
 
     // this function adds a component to an entity
     template <class T, class... TArgs>
@@ -89,9 +112,11 @@ class Entity {
 class Manager {
   private:
     std::vector<std::unique_ptr<Entity>> entities;
+    std::array<std::vector<Entity *>, maxGroups> groupedEntities;
 
   public:
-    void update() {
+    void
+    update() {
         for (auto &e : entities)
             e->update(); // updates each entity
     }
@@ -100,14 +125,27 @@ class Manager {
             e->draw(); // draws each entity
     }
     void refresh() {
+        for (auto i(0u); i < maxGroups; i++) {
+            auto &v(groupedEntities[i]);
+            v.erase(std::remove_if(std::begin(v), std::end(v), [i](Entity *mEntity) { return !mEntity->isActive() || !mEntity->hasGroup(i); }), std::end(v));
+        }
+
         entities.erase(std::remove_if(std::begin(entities), std::end(entities), [](const std::unique_ptr<Entity> &mEntity) {
                            return !mEntity->isActive();
                        }),
                        std::end(entities));
     }
 
+    void AddToGroup(Entity *mEntity, Group mGroup) {
+        groupedEntities[mGroup].emplace_back(mEntity);
+    }
+
+    std::vector<Entity *> &getGroup(Group mGroup) {
+        return groupedEntities[mGroup];
+    }
+
     Entity &addEntity() {
-        Entity *e = new Entity();
+        Entity *e = new Entity(*this);
         std::unique_ptr<Entity> uPtr{e};
         entities.emplace_back(std::move(uPtr));
         return *e;

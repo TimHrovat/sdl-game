@@ -3,14 +3,18 @@
 #include "../textureManager/TextureManager.h"
 #include "Components.h"
 #include "SDL.h"
+#include "TransformComponent.h"
+#include <iostream>
+#include <map>
 
 class SpriteComponent : public Component {
-  private:
+  public:
     TransformComponent *transform;
     SDL_Texture *texture;
     SDL_Rect srcRect, destRect;
 
-  public:
+    SDL_RendererFlip spriteFlip = SDL_FLIP_NONE;
+
     SpriteComponent() = default;
     SpriteComponent(const char *path) {
         setTex(path);
@@ -24,23 +28,22 @@ class SpriteComponent : public Component {
     }
 
     void init() override {
-
         transform = &entity->getComponent<TransformComponent>();
 
         srcRect.x = 0;
-        srcRect.y = 50;
+        srcRect.y = 0;
         srcRect.w = transform->width;
         srcRect.h = transform->height;
     }
 
     void update() override {
-        destRect.x = static_cast<int>(transform->position.x);
-        destRect.y = static_cast<int>(transform->position.y);
-        destRect.w = static_cast<int>(transform->width * transform->scale);
-        destRect.h = static_cast<int>(transform->height * transform->scale);
+        destRect.x = static_cast<int>(transform->position.x) - Game::camera.x;
+        destRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
+        destRect.w = static_cast<int>(srcRect.w * transform->scale);
+        destRect.h = static_cast<int>(srcRect.h * transform->scale);
     }
 
     void draw() override {
-        TextureManager::draw(texture, srcRect, destRect);
+        TextureManager::Draw(texture, srcRect, destRect, spriteFlip);
     }
 };

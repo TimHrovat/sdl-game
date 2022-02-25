@@ -6,3 +6,4 @@
 #include "TransformComponent.h"
 #include "CollisionComponent.h"
 #include "TileComponent.h"
+#include "AnimationComponent.h"
