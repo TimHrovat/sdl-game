@@ -15,7 +15,7 @@ SDL_Rect Game::camera = {0, 0, 1080, 720};
 std::vector<CollisionComponent *> Game::collisions;
 
 auto &player(manager.addEntity());
-auto &wall(manager.addEntity());
+auto &bg(manager.addEntity());
 
 enum groupLabels : std::size_t {
     groupMap,
@@ -41,6 +41,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
         std::cout << "SDL initialized!..." << std::endl;
 
         IMG_Init(IMG_INIT_PNG); // initializes img libary
+        IMG_Init(IMG_INIT_JPG);
 
         // Creates a SDL window and checks if it's created successfully
         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
@@ -62,12 +63,12 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
         player.addComponent<KeyboardHandler>();
         player.addComponent<CollisionComponent>("player");
         player.addComponent<AnimationComponent>();
+        player.addComponent<PhysicsComponent>();
         player.addGroup(groupPlayers);
 
-        wall.addComponent<TransformComponent>(300.0f, 300.0f, 300, 20, 1);
-        wall.addComponent<SpriteComponent>("../assets/background/background.bmp");
-        wall.addComponent<CollisionComponent>("wall");
-        wall.addGroup(groupMap);
+        bg.addComponent<TransformComponent>(0, -200, 2160, 3840, 0.5);
+        bg.addComponent<SpriteComponent>("../assets/background/background.png");
+        bg.addGroup(groupBackground);
 
         isRunning = true;
     } else {
@@ -91,9 +92,9 @@ void Game::update() {
     manager.refresh();
     manager.update();
 
-    for (auto cc : collisions) {
-        Collision::AABB(player.getComponent<CollisionComponent>(), *cc);
-    }
+    // for (auto cc : collisions) {
+    //     Collision::AABB(player.getComponent<CollisionComponent>(), *cc);
+    // }
 
     camera.x = player.getComponent<TransformComponent>().position.x - 300;
     camera.y = player.getComponent<TransformComponent>().position.y - 600;

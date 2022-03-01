@@ -10,6 +10,7 @@
 class KeyboardHandler : public Component {
 
   public:
+    bool inJump = false;
     TransformComponent *transform;
     SpriteComponent *sprite;
 
@@ -22,7 +23,10 @@ class KeyboardHandler : public Component {
         if (Game::event.type == SDL_KEYDOWN) {
             switch (Game::event.key.keysym.sym) {
                 case SDLK_w:
-                    transform->velocity.y = -1;
+                    if (!inJump) {
+                        transform->velocity.y = -4;
+                        inJump = true;
+                    }
                     break;
                 case SDLK_s:
                     transform->velocity.y = 1;
@@ -42,7 +46,6 @@ class KeyboardHandler : public Component {
         if (Game::event.type == SDL_KEYUP) {
             switch (Game::event.key.keysym.sym) {
                 case SDLK_w:
-                    transform->velocity.y = 0;
                     break;
                 case SDLK_s:
                     transform->velocity.y = 0;

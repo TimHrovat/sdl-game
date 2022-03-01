@@ -7,3 +7,4 @@
 #include "CollisionComponent.h"
 #include "TileComponent.h"
 #include "AnimationComponent.h"
+#include "PhysicsComponent.h"

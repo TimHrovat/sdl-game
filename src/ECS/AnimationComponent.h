@@ -66,6 +66,10 @@ class AnimationComponent : public Component {
         if (transform->velocity.x == 0 && transform->velocity.y == 0 && "Idle" != lastAnimation) {
             SetAnimation("Idle");
             lastAnimation = (char *)"Idle";
+        } else if (transform->velocity.x > 0 && transform->velocity.y < 0 && "JumpRight" != lastAnimation) {
+            sprite->spriteFlip = SDL_FLIP_NONE;
+            SetAnimation("Jump");
+            lastAnimation = (char *)"JumpRight";
         } else if (transform->velocity.x > 0 && transform->velocity.y == 0 && "RunRight" != lastAnimation) {
             sprite->spriteFlip = SDL_FLIP_NONE;
             SetAnimation("Run");
