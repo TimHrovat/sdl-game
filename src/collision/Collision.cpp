@@ -18,3 +18,19 @@ bool Collision::AABB(const CollisionComponent &colA, const CollisionComponent &c
     }
     return false;
 }
+
+bool Collision::Side(const CollisionComponent &colA, const CollisionComponent &colB) {
+    if (colA.collider.x + colA.collider.w >= colB.collider.x &&
+        colB.collider.x + colB.collider.w >= colA.collider.x) {
+        return true;
+    }
+    return false;
+}
+
+bool Collision::UpDown(const CollisionComponent &colA, const CollisionComponent &colB) {
+    if (colA.collider.y + colA.collider.h >= colB.collider.y &&
+        colB.collider.y + colB.collider.h >= colA.collider.y) {
+        return true;
+    }
+    return false;
+}
