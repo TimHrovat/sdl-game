@@ -24,7 +24,7 @@ class KeyboardHandler : public Component {
             switch (Game::event.key.keysym.sym) {
                 case SDLK_w:
                     if (!inJump) {
-                        transform->velocity.y = -4;
+                        transform->velocity.y = -6;
                         inJump = true;
                     }
                     break;

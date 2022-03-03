@@ -92,12 +92,19 @@ void Game::update() {
     manager.refresh();
     manager.update();
 
-    // for (auto cc : collisions) {
-    //     Collision::AABB(player.getComponent<CollisionComponent>(), *cc);
-    // }
-
     camera.x = player.getComponent<TransformComponent>().position.x - 300;
     camera.y = player.getComponent<TransformComponent>().position.y - 600;
+
+    for (auto c : collisions) {
+
+        if (Collision::AABB(player.getComponent<CollisionComponent>(), *c) && player.getComponent<KeyboardHandler>().inJump == false) {
+            player.getComponent<TransformComponent>().velocity.y = 0;
+            player.getComponent<TransformComponent>().position.y = c->posy - player.getComponent<TransformComponent>().height * player.getComponent<TransformComponent>().scale;
+        }
+        if (Collision::AABB(player.getComponent<CollisionComponent>(), *c) && player.getComponent<TransformComponent>().velocity.y > 0) {
+            player.getComponent<KeyboardHandler>().inJump = false;
+        }
+    }
 
     if (camera.x < 0) camera.x = 0;
     if (camera.y < 0) camera.y = 0;

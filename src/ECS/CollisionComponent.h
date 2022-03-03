@@ -8,6 +8,7 @@ class CollisionComponent : public Component {
   public:
     SDL_Rect collider;
     std::string tag;
+    float posy;
 
     TransformComponent *transform;
 
@@ -20,8 +21,9 @@ class CollisionComponent : public Component {
             entity->addComponent<TransformComponent>();
         }
         transform = &entity->getComponent<TransformComponent>();
-
-        Game::collisions.push_back(this);
+        if (tag != "player")
+            Game::collisions.push_back(this);
+        posy = transform->position.y;
     }
 
     void update() override {
