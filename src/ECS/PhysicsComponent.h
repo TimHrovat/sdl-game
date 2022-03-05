@@ -2,6 +2,7 @@
 
 #include "../collision/Collision.h"
 
+#include "../vector2D/Vector2D.h"
 #include "CollisionComponent.h"
 #include "Components.h"
 #include "ECS.h"
@@ -14,6 +15,7 @@ class PhysicsComponent : public Component {
     TransformComponent *transform;
     CollisionComponent *collision;
     KeyboardHandler *kbdHandler;
+
     float gravity = 0.2f;
 
   public:

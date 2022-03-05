@@ -37,8 +37,8 @@ class SpriteComponent : public Component {
     }
 
     void update() override {
-        destRect.x = static_cast<int>(transform->position.x); // - Game::camera.x;
-        destRect.y = static_cast<int>(transform->position.y); // - Game::camera.y;
+        destRect.x = static_cast<int>(transform->position.x) - Game::camera.x;
+        destRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
         destRect.w = static_cast<int>(srcRect.w * transform->scale);
         destRect.h = static_cast<int>(srcRect.h * transform->scale);
     }

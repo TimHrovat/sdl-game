@@ -58,7 +58,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 
         map = new Map();
 
-        player.addComponent<TransformComponent>(40.0f, 600.0f - 439 * 0.2f + 1, 439, 232, 0.2);
+        player.addComponent<TransformComponent>(40.0f, 600.0f - 439 * 0.15f + 1, 439, 232, 0.15);
         player.addComponent<SpriteComponent>();
         player.addComponent<KeyboardHandler>();
         player.addComponent<CollisionComponent>("player");
@@ -90,26 +90,32 @@ void Game::handleEvents() {
 
 void Game::update() {
     manager.refresh();
-    manager.update();
+    // manager.update();
+
+    for (auto &b : background) {
+        b->update();
+    }
+    for (auto &t : tiles) {
+        t->update();
+    }
+    for (auto &p : players) {
+        p->update();
+    }
+    for (auto &e : enemies) {
+        e->update();
+    }
 
     camera.x = player.getComponent<TransformComponent>().position.x - 300;
-    camera.y = player.getComponent<TransformComponent>().position.y - 600;
+    camera.y = player.getComponent<TransformComponent>().position.y - 550;
 
-    // for (auto c : collisions) {
+    if (camera.x < 0)
+        camera.x = 0;
+    else if (camera.x + camera.w >= bg.getComponent<TransformComponent>().width * bg.getComponent<TransformComponent>().scale)
+        camera.x = bg.getComponent<TransformComponent>().width * bg.getComponent<TransformComponent>().scale - camera.w;
+    if (camera.y < -200) camera.y = -200;
 
-    //     if (Collision::AABB(player.getComponent<CollisionComponent>(), *c) && player.getComponent<KeyboardHandler>().inJump == false) {
-    //         player.getComponent<TransformComponent>().velocity.y = 0;
-    //         player.getComponent<TransformComponent>().position.y = c->posy - player.getComponent<TransformComponent>().height * player.getComponent<TransformComponent>().scale + 1;
-    //     }
-    //     if (Collision::AABB(player.getComponent<CollisionComponent>(), *c) && player.getComponent<TransformComponent>().velocity.y > 0) {
-    //         player.getComponent<KeyboardHandler>().inJump = false;
-    //     }
-    // }
-
-    if (camera.x < 0) camera.x = 0;
-    if (camera.y < 0) camera.y = 0;
-    if (camera.x > camera.w) camera.x = camera.w;
-    if (camera.y > camera.h) camera.y = camera.h;
+    std::cout << "player x: " << player.getComponent<TransformComponent>().position.x << std::endl;
+    std::cout << "player y: " << player.getComponent<TransformComponent>().position.y << std::endl;
 }
 
 void Game::render() {

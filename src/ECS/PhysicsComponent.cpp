@@ -14,7 +14,6 @@ void PhysicsComponent::update() {
         if (Collision::AABB(*collision, *c) && kbdHandler->inJump == false) {
             transform->velocity.y = 0;
             transform->position.y = c->transform->position.y - transform->height * transform->scale + 1;
-            //  std::cout << c->transform->position.y << std::endl;
         }
         if (Collision::AABB(*collision, *c) && transform->velocity.y > 0) {
             kbdHandler->inJump = false;
