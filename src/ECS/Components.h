@@ -1,10 +1,11 @@
 #pragma once
 
 #include "ECS.h"
-#include "KeyboardHandler.h"
-#include "SpriteComponent.h"
-#include "TransformComponent.h"
-#include "CollisionComponent.h"
-#include "TileComponent.h"
-#include "AnimationComponent.h"
-#include "PhysicsComponent.h"
+
+#include "animationComponent/AnimationComponent.h"
+#include "collisionComponent/CollisionComponent.h"
+#include "keyboardHandler/KeyboardHandler.h"
+#include "physicsComponent/PhysicsComponent.h"
+#include "spriteComponent/SpriteComponent.h"
+#include "tileComponent/TileComponent.h"
+#include "transformComponent/TransformComponent.h"

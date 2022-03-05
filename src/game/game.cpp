@@ -16,6 +16,7 @@ std::vector<CollisionComponent *> Game::collisions;
 
 auto &player(manager.addEntity());
 auto &bg(manager.addEntity());
+auto &enemy(manager.addEntity());
 
 enum groupLabels : std::size_t {
     groupMap,
@@ -69,6 +70,11 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
         bg.addComponent<TransformComponent>(0, -200, 2160, 3840, 0.5);
         bg.addComponent<SpriteComponent>("../assets/background/background.png");
         bg.addGroup(groupBackground);
+
+        enemy.addComponent<TransformComponent>(300, 360, 40, 40, 1);
+        enemy.addComponent<SpriteComponent>("../assets/background/ground.png");
+        enemy.addComponent<CollisionComponent>("enemy");
+        enemy.addGroup(groupBackground);
 
         isRunning = true;
     } else {

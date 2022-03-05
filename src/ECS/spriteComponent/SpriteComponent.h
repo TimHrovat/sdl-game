@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../textureManager/TextureManager.h"
-#include "Components.h"
+#include "../../textureManager/TextureManager.h"
+#include "../Components.h"
 #include "SDL.h"
-#include "TransformComponent.h"
+#include "../transformComponent/TransformComponent.h"
 #include <iostream>
 #include <map>
 

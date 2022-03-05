@@ -1,9 +1,13 @@
 #pragma once
 
-#include "../game/Game.h"
-#include "../textureManager/TextureManager.h"
-#include "Components.h"
+#include "../../game/Game.h"
+#include "../../textureManager/TextureManager.h"
+#include "../Components.h"
+#include "../spriteComponent/SpriteComponent.h"
+#include "../transformComponent/TransformComponent.h"
 #include "SDL.h"
+#include <map>
+#include <string>
 
 struct Animation {
     SDL_Texture *texture;
@@ -27,7 +31,7 @@ class AnimationComponent : public Component {
     SpriteComponent *sprite;
     TransformComponent *transform;
     int speed, frames;
-    char *lastAnimation;
+    std::string lastAnimation;
 
   public:
     std::map<const char *, Animation> animations;
@@ -63,18 +67,18 @@ class AnimationComponent : public Component {
 
     void update() override {
         sprite->srcRect.x = sprite->srcRect.w * static_cast<int>((SDL_GetTicks() / speed) % frames);
-        if (transform->velocity.x == 0 && transform->velocity.y == 0 && "Idle" != lastAnimation) {
+        if (transform->velocity.x == 0 && transform->velocity.y == 0 && lastAnimation.compare("Idle") != 0) {
             SetAnimation("Idle");
             lastAnimation = (char *)"Idle";
-        } else if (transform->velocity.x > 0 && transform->velocity.y < 0 && "JumpRight" != lastAnimation) {
+        } else if (transform->velocity.x > 0 && transform->velocity.y < 0 && lastAnimation.compare("JumpRight") != 0) {
             sprite->spriteFlip = SDL_FLIP_NONE;
             SetAnimation("Jump");
             lastAnimation = (char *)"JumpRight";
-        } else if (transform->velocity.x > 0 && transform->velocity.y == 0 && "RunRight" != lastAnimation) {
+        } else if (transform->velocity.x > 0 && transform->velocity.y == 0 && lastAnimation.compare("RunRight") != 0) {
             sprite->spriteFlip = SDL_FLIP_NONE;
             SetAnimation("Run");
             lastAnimation = (char *)"RunRight";
-        } else if (transform->velocity.x < 0 && transform->velocity.y == 0 && "RunLeft" != lastAnimation) {
+        } else if (transform->velocity.x < 0 && transform->velocity.y == 0 && lastAnimation.compare("RunLeft") != 0) {
             sprite->spriteFlip = SDL_FLIP_HORIZONTAL;
             SetAnimation("Run");
             lastAnimation = (char *)"RunLeft";

@@ -1,5 +1,5 @@
 #include "Collision.h"
-#include "../ECS/CollisionComponent.h"
+#include "../ECS/collisionComponent/CollisionComponent.h"
 
 bool Collision::AABB(const SDL_Rect &recA, const SDL_Rect &recB) {
     if (recA.x + recA.w >= recB.x &&

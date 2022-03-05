@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../game/Game.h"
-#include "Components.h"
-#include "ECS.h"
-#include "SpriteComponent.h"
-#include "TransformComponent.h" // no touchy - doesn't work without that shit
+#include "../../game/Game.h"
+#include "../Components.h"
+#include "../ECS.h"
+#include "../spriteComponent/SpriteComponent.h"
+#include "../transformComponent/TransformComponent.h" // no touchy - doesn't work without that shit
 #include <iostream>
 
 class KeyboardHandler : public Component {
@@ -24,12 +24,11 @@ class KeyboardHandler : public Component {
             switch (Game::event.key.keysym.sym) {
                 case SDLK_w:
                     if (!inJump) {
-                        transform->velocity.y = -4;
+                        transform->velocity.y = -3;
                         inJump = true;
                     }
                     break;
                 case SDLK_s:
-                    transform->velocity.y = 1;
                     break;
                 case SDLK_a:
                     transform->velocity.x = -1;
@@ -48,7 +47,6 @@ class KeyboardHandler : public Component {
                 case SDLK_w:
                     break;
                 case SDLK_s:
-                    transform->velocity.y = 0;
                     break;
                 case SDLK_a:
                     transform->velocity.x = 0;
