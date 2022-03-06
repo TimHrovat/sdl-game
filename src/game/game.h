@@ -25,6 +25,8 @@ class Game {
     void render();
     void clean();
 
+    void reset(const char *txt);
+
     bool running();
 
     static std::vector<CollisionComponent *> collisions;
@@ -34,5 +36,7 @@ class Game {
     static SDL_Renderer *renderer;
     static SDL_Event event;
     static void AddTile(int id, int x, int y, int w, int h);
+    static void AddAnimal(int platformX, int platformY);
+    static void AddEnemy(int platformX, int platformY, int maxDelta);
     static SDL_Rect camera;
 };

@@ -33,10 +33,10 @@ class KeyboardHandler : public Component {
                 case SDLK_s:
                     break;
                 case SDLK_a:
-                    transform->velocity.x = -1;
+                    transform->velocity.x = -1.3;
                     break;
                 case SDLK_d:
-                    transform->velocity.x = 1;
+                    transform->velocity.x = 1.3;
                     break;
 
                 default:

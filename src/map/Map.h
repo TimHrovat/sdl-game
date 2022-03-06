@@ -8,4 +8,6 @@ class Map {
     ~Map();
 
     void DrawMap();
+    static void addAnimals();
+    static void addEnemies();
 };

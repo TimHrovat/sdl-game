@@ -18,11 +18,11 @@ std::vector<CollisionComponent *> Game::collisions;
 std::vector<Entity *> Game::animalCollisions;
 std::vector<Entity *> Game::enemyCollisions;
 
+Text *animalCount;
+Text *playerLives;
+
 auto &player(manager.addEntity());
 auto &bg(manager.addEntity());
-auto &enemy(manager.addEntity());
-auto &animal(manager.addEntity());
-auto &animal2(manager.addEntity());
 
 enum groupLabels : std::size_t {
     groupMap,
@@ -83,13 +83,8 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
         bg.addComponent<SpriteComponent>("../assets/background/background.png");
         bg.addGroup(groupBackground);
 
-        enemy.addComponent<NPC>("enemy", 300, 400, 200);
-        enemy.addGroup(groupEnemies);
-
-        animal.addComponent<NPC>("animal", 300, 400, 0);
-        animal.addGroup(groupAnimals);
-        animal2.addComponent<NPC>("animal", 360, 400, 0);
-        animal2.addGroup(groupAnimals);
+        animalCount = new Text("", 10, 10, 100, 20, 24);
+        playerLives = new Text("", 10, 40, 100, 20, 24);
 
         isRunning = true;
     } else {
@@ -111,6 +106,12 @@ void Game::handleEvents() {
 void Game::update() {
     manager.refresh();
     // manager.update();
+    std::string tempStr = "Animals: " + std::to_string(animalCollisions.size());
+    animalCount->update(tempStr.c_str());
+    tempStr = "Player lives: " + std::to_string(player.getComponent<KeyboardHandler>().playerLives);
+    playerLives->update(tempStr.c_str());
+
+    std::cout << "PLAYER POS: " << player.getComponent<TransformComponent>().position.x << std::endl;
 
     for (auto &b : background) {
         b->update();
@@ -145,6 +146,10 @@ void Game::render() {
     for (auto &b : background) {
         b->draw();
     }
+
+    animalCount->draw();
+    playerLives->draw();
+
     for (auto &t : tiles) {
         t->draw();
     }
@@ -157,7 +162,14 @@ void Game::render() {
     for (auto &e : enemies) {
         e->draw();
     }
-    SDL_RenderPresent(renderer);
+
+    if (player.getComponent<KeyboardHandler>().playerLives == 0) {
+        reset("YOU LOST");
+    } else if (animalCollisions.size() == 0) {
+        reset("YOU WON");
+    } else {
+        SDL_RenderPresent(renderer);
+    }
 }
 
 void Game::clean() {
@@ -175,4 +187,33 @@ void Game::AddTile(int id, int x, int y, int w, int h) {
     auto &tile(manager.addEntity());
     tile.addComponent<TileComponent>(x, y, w, h, id);
     tile.addGroup(groupMap);
+}
+
+void Game::AddAnimal(int platformX, int platformY) {
+    auto &animal(manager.addEntity());
+    animal.addComponent<NPC>("animal", platformX, platformY, 0);
+    animal.addGroup(groupAnimals);
+}
+
+void Game::AddEnemy(int platformX, int platformY, int maxDelta) {
+    auto &enemy(manager.addEntity());
+    enemy.addComponent<NPC>("enemy", platformX, platformY, maxDelta);
+    enemy.addGroup(groupEnemies);
+}
+
+void Game::reset(const char *txt) {
+    Text text(txt, 540 - 150, 360 - 50, 300, 100, 50);
+    text.draw();
+    SDL_RenderPresent(renderer);
+
+    SDL_Delay(2000);
+
+    for (auto &a : animals) {
+        a->destroy();
+    }
+    player.getComponent<TransformComponent>().position.x = 40;
+    player.getComponent<TransformComponent>().position.y = 500;
+    player.getComponent<KeyboardHandler>().playerLives = 3;
+    animalCollisions.clear();
+    Map::addAnimals();
 }
