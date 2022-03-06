@@ -2,8 +2,8 @@
 
 #include "../../textureManager/TextureManager.h"
 #include "../Components.h"
-#include "SDL.h"
 #include "../transformComponent/TransformComponent.h"
+#include "SDL.h"
 #include <iostream>
 #include <map>
 

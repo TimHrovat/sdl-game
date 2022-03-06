@@ -2,6 +2,7 @@
 
 #include "ECS.h"
 
+#include "NPC/NPC.h"
 #include "animationComponent/AnimationComponent.h"
 #include "collisionComponent/CollisionComponent.h"
 #include "keyboardHandler/KeyboardHandler.h"

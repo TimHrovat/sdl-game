@@ -14,6 +14,8 @@ class KeyboardHandler : public Component {
     TransformComponent *transform;
     SpriteComponent *sprite;
 
+    int playerLives = 3;
+
     void init() override {
         transform = &entity->getComponent<TransformComponent>();
         sprite = &entity->getComponent<SpriteComponent>();

@@ -13,23 +13,28 @@ SDL_Event Game::event;
 SDL_Rect Game::camera = {0, 0, 1080, 720};
 
 std::vector<CollisionComponent *> Game::collisions;
+std::vector<Entity *> Game::animalCollisions;
+std::vector<Entity *> Game::enemyCollisions;
 
 auto &player(manager.addEntity());
 auto &bg(manager.addEntity());
 auto &enemy(manager.addEntity());
+auto &animal(manager.addEntity());
 
 enum groupLabels : std::size_t {
     groupMap,
     groupPlayers,
     groupEnemies,
     groupColliders,
-    groupBackground
+    groupBackground,
+    groupAnimals
 };
 
 auto &tiles(manager.getGroup(groupMap));
 auto &players(manager.getGroup(groupPlayers));
 auto &enemies(manager.getGroup(groupEnemies));
 auto &background(manager.getGroup(groupBackground));
+auto &animals(manager.getGroup(groupAnimals));
 
 Game::Game() {
 }
@@ -71,10 +76,11 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
         bg.addComponent<SpriteComponent>("../assets/background/background.png");
         bg.addGroup(groupBackground);
 
-        enemy.addComponent<TransformComponent>(300, 360, 40, 40, 1);
-        enemy.addComponent<SpriteComponent>("../assets/background/ground.png");
-        enemy.addComponent<CollisionComponent>("enemy");
-        enemy.addGroup(groupBackground);
+        enemy.addComponent<NPC>("enemy", 300, 400, 200);
+        enemy.addGroup(groupEnemies);
+
+        animal.addComponent<NPC>("animal", 300, 400, 0);
+        animal.addGroup(groupAnimals);
 
         isRunning = true;
     } else {
@@ -104,6 +110,9 @@ void Game::update() {
     for (auto &t : tiles) {
         t->update();
     }
+    for (auto &a : animals) {
+        a->update();
+    }
     for (auto &p : players) {
         p->update();
     }
@@ -132,6 +141,9 @@ void Game::render() {
     }
     for (auto &t : tiles) {
         t->draw();
+    }
+    for (auto &a : animals) {
+        a->draw();
     }
     for (auto &p : players) {
         p->draw();

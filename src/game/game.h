@@ -6,6 +6,7 @@
 #include <vector>
 
 class CollisionComponent;
+class Entity;
 
 class Game {
   private:
@@ -25,9 +26,12 @@ class Game {
 
     bool running();
 
+    static std::vector<CollisionComponent *> collisions;
+    static std::vector<Entity *> animalCollisions;
+    static std::vector<Entity *> enemyCollisions;
+
     static SDL_Renderer *renderer;
     static SDL_Event event;
-    static std::vector<CollisionComponent *> collisions;
     static void AddTile(int id, int x, int y, int w, int h);
     static SDL_Rect camera;
 };

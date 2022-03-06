@@ -17,7 +17,7 @@ class CollisionComponent : public Component {
 
     void init() override {
         transform = &entity->getComponent<TransformComponent>();
-        if (tag != "player")
+        if (tag == "tile")
             Game::collisions.push_back(this);
     }
 

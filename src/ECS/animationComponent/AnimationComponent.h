@@ -54,15 +54,22 @@ class AnimationComponent : public Component {
         animations.emplace("Death", death);
     }
 
-    AnimationComponent(const char *pathWalk) {
-        Animation walk = Animation(pathWalk, 10, 100, 300, 400);
+    AnimationComponent(const char *pathWalk, bool isMoving) {
+        if (isMoving) {
+            Animation walk = Animation(pathWalk, 10, 150, 415, 507);
+            // animations.emplace("Idle", walk);
+            animations.emplace("Run", walk);
+        } else {
+            Animation idle = Animation(pathWalk, 10, 100, 542, 474);
+            animations.emplace("Idle", idle);
+        }
     }
 
     void init() override {
         sprite = &entity->getComponent<SpriteComponent>();
         transform = &entity->getComponent<TransformComponent>();
 
-        SetAnimation("Idle");
+        // SetAnimation("Idle");
     }
 
     void update() override {
