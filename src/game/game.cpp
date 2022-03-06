@@ -2,8 +2,10 @@
 #include "../ECS/Components.h"
 #include "../collision/Collision.h"
 #include "../map/Map.h"
+#include "../text/text.h"
 #include "../textureManager/TextureManager.h"
 #include "../vector2D/Vector2D.h"
+#include <sstream>
 
 Manager manager;
 Map *map;
@@ -20,6 +22,7 @@ auto &player(manager.addEntity());
 auto &bg(manager.addEntity());
 auto &enemy(manager.addEntity());
 auto &animal(manager.addEntity());
+auto &animal2(manager.addEntity());
 
 enum groupLabels : std::size_t {
     groupMap,
@@ -48,6 +51,10 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 
         IMG_Init(IMG_INIT_PNG); // initializes img libary
         IMG_Init(IMG_INIT_JPG);
+        TTF_Init();
+        if (TTF_Init()) {
+            std::cout << "ttf initialized successfully" << std::endl;
+        }
 
         // Creates a SDL window and checks if it's created successfully
         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
@@ -81,6 +88,8 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 
         animal.addComponent<NPC>("animal", 300, 400, 0);
         animal.addGroup(groupAnimals);
+        animal2.addComponent<NPC>("animal", 360, 400, 0);
+        animal2.addGroup(groupAnimals);
 
         isRunning = true;
     } else {
@@ -89,7 +98,6 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height) {
 }
 
 void Game::handleEvents() {
-
     SDL_PollEvent(&event);
     switch (event.type) {
         case SDL_QUIT:
@@ -128,13 +136,11 @@ void Game::update() {
     else if (camera.x + camera.w >= bg.getComponent<TransformComponent>().width * bg.getComponent<TransformComponent>().scale)
         camera.x = bg.getComponent<TransformComponent>().width * bg.getComponent<TransformComponent>().scale - camera.w;
     if (camera.y < -200) camera.y = -200;
-
-    std::cout << "player x: " << player.getComponent<TransformComponent>().position.x << std::endl;
-    std::cout << "player y: " << player.getComponent<TransformComponent>().position.y << std::endl;
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
+
     // stuff that needs rendering goes here
     for (auto &b : background) {
         b->draw();
