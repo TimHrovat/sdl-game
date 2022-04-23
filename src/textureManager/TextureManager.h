@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../menu/Menu.h"
 #include "../src/game/Game.h"
 
 class TextureManager {

@@ -2,17 +2,17 @@
 #include "../ECS/Components.h"
 #include "../collision/Collision.h"
 #include "../map/Map.h"
+#include "../menu/Menu.h"
 #include "../text/text.h"
 #include "../textureManager/TextureManager.h"
 #include "../vector2D/Vector2D.h"
+#include <fstream>
 #include <sstream>
 
 Manager manager;
 Map *map;
-
-SDL_Renderer *Game::renderer = NULL;
-SDL_Event Game::event;
 SDL_Rect Game::camera = {0, 0, 1080, 720};
+int Game::time;
 
 std::vector<CollisionComponent *> Game::collisions;
 std::vector<Entity *> Game::animalCollisions;
@@ -20,6 +20,7 @@ std::vector<Entity *> Game::enemyCollisions;
 
 Text *animalCount;
 Text *playerLives;
+Text *timeScore;
 
 auto &player(manager.addEntity());
 auto &bg(manager.addEntity());
@@ -45,73 +46,43 @@ Game::Game() {
 Game::~Game() {
 }
 
-void Game::init(const char *title, int xpos, int ypos, int width, int height) {
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-        std::cout << "SDL initialized!..." << std::endl;
+void Game::init(int level) {
+    animalCollisions.clear();
+    enemyCollisions.clear();
+    collisions.clear();
 
-        IMG_Init(IMG_INIT_PNG); // initializes img libary
-        IMG_Init(IMG_INIT_JPG);
-        TTF_Init();
-        if (TTF_Init()) {
-            std::cout << "ttf initialized successfully" << std::endl;
-        }
+    this->level = level;
 
-        // Creates a SDL window and checks if it's created successfully
-        window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
-        if (window) {
-            std::cout << "Window successfully created!" << std::endl;
-        }
+    map = new Map(level);
 
-        // Creates a SDL renderer and checks if it's created successfully
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        if (renderer) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            std::cout << "Renderer successfully created!" << std::endl;
-        }
+    AddPlayer();
+    AddBackground();
 
-        map = new Map();
+    animalCount = new Text("", 10, 10, 20, false);
+    playerLives = new Text("", 10, 35, 20, false);
+    timeScore = new Text("", 10, 60, 20, false);
 
-        player.addComponent<TransformComponent>(40.0f, 600.0f - 439 * 0.15f + 1, 439, 232, 0.15);
-        player.addComponent<SpriteComponent>();
-        player.addComponent<KeyboardHandler>();
-        player.addComponent<CollisionComponent>("player");
-        player.addComponent<AnimationComponent>();
-        player.addComponent<PhysicsComponent>();
-        player.addGroup(groupPlayers);
+    time = 0;
+    prevTime = SDL_GetTicks();
 
-        bg.addComponent<TransformComponent>(0, -200, 2160, 3840, 0.5);
-        bg.addComponent<SpriteComponent>("../assets/background/background.png");
-        bg.addGroup(groupBackground);
-
-        animalCount = new Text("", 10, 10, 100, 20, 24);
-        playerLives = new Text("", 10, 40, 100, 20, 24);
-
-        isRunning = true;
-    } else {
-        isRunning = false;
-    }
-}
-
-void Game::handleEvents() {
-    SDL_PollEvent(&event);
-    switch (event.type) {
-        case SDL_QUIT:
-            isRunning = false;
-            break;
-        default:
-            break;
-    }
+    isRunning = true;
 }
 
 void Game::update() {
     manager.refresh();
+    int thisTime = SDL_GetTicks();
+    if (thisTime - prevTime >= 1000) {
+        time++;
+        prevTime = thisTime;
+    }
+    std::cout << time << std::endl;
     // manager.update();
     std::string tempStr = "Animals: " + std::to_string(animalCollisions.size());
     animalCount->update(tempStr.c_str());
     tempStr = "Player lives: " + std::to_string(player.getComponent<KeyboardHandler>().playerLives);
     playerLives->update(tempStr.c_str());
-
-    std::cout << "PLAYER POS: " << player.getComponent<TransformComponent>().position.x << std::endl;
+    tempStr = "Time: " + std::to_string(time / 60) + ":" + std::to_string(time % 60);
+    timeScore->update(tempStr.c_str());
 
     for (auto &b : background) {
         b->update();
@@ -140,7 +111,7 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(Menu::renderer);
 
     // stuff that needs rendering goes here
     for (auto &b : background) {
@@ -149,6 +120,7 @@ void Game::render() {
 
     animalCount->draw();
     playerLives->draw();
+    timeScore->draw();
 
     for (auto &t : tiles) {
         t->draw();
@@ -168,15 +140,22 @@ void Game::render() {
     } else if (animalCollisions.size() == 0) {
         reset("YOU WON");
     } else {
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(Menu::renderer);
     }
 }
 
 void Game::clean() {
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    SDL_Quit();
-    std::cout << "Game quit successfully!" << std::endl;
+    for (auto &t : tiles) {
+        t->destroy();
+    }
+    for (auto &a : animals) {
+        a->destroy();
+    }
+    for (auto &e : enemies) {
+        e->destroy();
+    }
+    animalCollisions.clear();
+    enemyCollisions.clear();
 }
 
 bool Game::running() {
@@ -201,19 +180,48 @@ void Game::AddEnemy(int platformX, int platformY, int maxDelta) {
     enemy.addGroup(groupEnemies);
 }
 
+void Game::AddBackground() {
+    if (!bg.hasComponent<TransformComponent>()) {
+        bg.addComponent<TransformComponent>(0, -200, 2160, 3840, 0.5);
+        bg.addComponent<SpriteComponent>("../assets/background/background.png");
+        bg.addGroup(groupBackground);
+    }
+}
+
 void Game::reset(const char *txt) {
-    Text text(txt, 540 - 150, 360 - 50, 300, 100, 50);
+    Text text(txt, 540 - 150, 360 - 50, 50, true);
     text.draw();
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(Menu::renderer);
 
     SDL_Delay(2000);
 
-    for (auto &a : animals) {
-        a->destroy();
-    }
-    player.getComponent<TransformComponent>().position.x = 40;
-    player.getComponent<TransformComponent>().position.y = 500;
     player.getComponent<KeyboardHandler>().playerLives = 3;
-    animalCollisions.clear();
-    Map::addAnimals();
+    // animalCollisions.clear();
+    clean();
+    init(level);
+}
+
+void Game::AddPlayer() {
+    if (!player.hasComponent<TransformComponent>()) {
+        player.addComponent<TransformComponent>(40.0f, 600.0f - 439 * 0.15f + 1, 439, 232, 0.15);
+        player.addComponent<SpriteComponent>();
+        player.addComponent<KeyboardHandler>();
+        player.addComponent<CollisionComponent>("player");
+        player.addComponent<AnimationComponent>();
+        player.addComponent<PhysicsComponent>();
+        player.addGroup(groupPlayers);
+    } else {
+        player.getComponent<TransformComponent>().position.x = 40;
+        player.getComponent<TransformComponent>().position.y = 600.0f - 439 * 0.15f + 1;
+    }
+}
+
+void Game::SaveForRestore() {
+    std::ofstream data("assets/restore/lvl.txt");
+    data << level;
+    data.close();
+
+    data.open("assets/restore/animals.bin", std::ios::binary);
+    for (auto &a : animals) {
+    }
 }

@@ -40,6 +40,7 @@ void PhysicsComponent::update() {
     for (auto enemy : Game::enemyCollisions) {
         if (Collision::AABB(*collision, enemy->getComponent<CollisionComponent>())) {
             kbdHandler->playerLives--;
+            Game::time += 10;
             transform->position.y = 500;
             transform->position.x = 40;
         }

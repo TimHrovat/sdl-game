@@ -11,21 +11,22 @@ class Entity;
 
 class Game {
   private:
-    bool isRunning;
-    SDL_Window *window;
+    bool isRunning = false;
+    int level;
+    int prevTime;
 
   public:
     Game();
     ~Game();
 
-    void init(const char *title, int xpos, int ypos, int width, int height);
+    void init(int level);
 
-    void handleEvents();
     void update();
     void render();
     void clean();
 
     void reset(const char *txt);
+    void SaveForRestore();
 
     bool running();
 
@@ -33,10 +34,11 @@ class Game {
     static std::vector<Entity *> animalCollisions;
     static std::vector<Entity *> enemyCollisions;
 
-    static SDL_Renderer *renderer;
-    static SDL_Event event;
     static void AddTile(int id, int x, int y, int w, int h);
     static void AddAnimal(int platformX, int platformY);
     static void AddEnemy(int platformX, int platformY, int maxDelta);
+    static void AddPlayer();
+    static void AddBackground();
     static SDL_Rect camera;
+    static int time;
 };

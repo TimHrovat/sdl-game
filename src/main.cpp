@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-#include "game/Game.h"
+#include "menu/Menu.h"
 
-Game *game = NULL;
+Menu *menu = NULL;
 
 int main() {
 
@@ -13,16 +13,16 @@ int main() {
     Uint32 frameStart;
     int frameTime;
 
-    game = new Game();
-    game->init("SDL game project", 0, 0, 1080, 720);
+    menu = new Menu();
+    menu->init("SDL game project", 0, 0, 1080, 720);
 
-    while (game->running()) {
+    while (menu->running()) {
 
         frameStart = SDL_GetTicks();
 
-        game->handleEvents();
-        game->update();
-        game->render();
+        menu->handleEvents();
+        menu->update();
+        menu->render();
 
         frameTime = SDL_GetTicks() - frameStart;
 
@@ -31,7 +31,7 @@ int main() {
         }
     }
 
-    game->clean();
+    menu->clean();
 
     return 0;
 }

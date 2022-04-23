@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../game/Game.h"
+#include "../../menu/Menu.h"
 #include "../Components.h"
 #include "../ECS.h"
 #include "../spriteComponent/SpriteComponent.h"
@@ -22,8 +23,8 @@ class KeyboardHandler : public Component {
     }
 
     void update() override {
-        if (Game::event.type == SDL_KEYDOWN) {
-            switch (Game::event.key.keysym.sym) {
+        if (Menu::event.type == SDL_KEYDOWN) {
+            switch (Menu::event.key.keysym.sym) {
                 case SDLK_w:
                     if (!inJump) {
                         transform->velocity.y = -3;
@@ -38,14 +39,13 @@ class KeyboardHandler : public Component {
                 case SDLK_d:
                     transform->velocity.x = 1.3;
                     break;
-
                 default:
                     break;
             }
         }
 
-        if (Game::event.type == SDL_KEYUP) {
-            switch (Game::event.key.keysym.sym) {
+        if (Menu::event.type == SDL_KEYUP) {
+            switch (Menu::event.key.keysym.sym) {
                 case SDLK_w:
                     break;
                 case SDLK_s:

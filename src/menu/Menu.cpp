@@ -1,72 +1,113 @@
-// #include "Menu.h"
+#include "Menu.h"
 
-// SDL_Renderer *Menu::renderer = NULL;
-// SDL_Event Menu::event;
-// Game *Menu::game = NULL;
+bool Menu::isRunning;
+bool Menu::enterPressed;
 
-// Text *play;
-// Text *quit;
+SDL_Renderer *Menu::renderer = NULL;
+SDL_Event Menu::event;
+Game *Menu::game = new Game();
+bool Menu::gameRunning = false;
+std::string Menu::currentPlayerName;
 
-// void Menu::init(const char *title, int xpos, int ypos, int width, int height) {
-//     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-//         std::cout << "SDL initialized!..." << std::endl;
+MainMenu *Menu::mainMenu = new MainMenu();
+LevelSelection *Menu::levelSelection = new LevelSelection();
+Scoreboard *Menu::scoreboard = new Scoreboard();
+ChooseName *Menu::chooseName = new ChooseName();
 
-//         IMG_Init(IMG_INIT_PNG); // initializes img libary
-//         IMG_Init(IMG_INIT_JPG);
-//         TTF_Init();
+void Menu::init(const char *title, int xpos, int ypos, int width, int height) {
+    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+        std::cout << "SDL initialized!..." << std::endl;
 
-//         // Creates a SDL window and checks if it's created successfully
-//         window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
-//         if (window) {
-//             std::cout << "Window successfully created!" << std::endl;
-//         }
+        IMG_Init(IMG_INIT_PNG); // initializes img libary
+        IMG_Init(IMG_INIT_JPG);
+        TTF_Init();
+        if (TTF_Init()) {
+            std::cout << "ttf initialized successfully" << std::endl;
+        }
 
-//         // Creates a SDL renderer and checks if it's created successfully
-//         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-//         if (renderer) {
-//             std::cout << "Renderer successfully created!" << std::endl;
-//         }
+        // Creates a SDL window and checks if it's created successfully
+        window = SDL_CreateWindow(title, xpos, ypos, width, height, 0);
+        if (window) {
+            std::cout << "Window successfully created!" << std::endl;
+        }
 
-//         play = new Text("play", 540 - 200, 150, 300, 100, 24);
-//         quit = new Text("quit", 540 - 200, 300, 300, 100, 24);
+        // Creates a SDL renderer and checks if it's created successfully
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        if (renderer) {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            std::cout << "Renderer successfully created!" << std::endl;
+        }
 
-//         isRunning = true;
-//     } else {
-//         isRunning = false;
-//     }
-// }
+        mainMenu->init();
 
-// void Menu::handleEvents() {
-//     SDL_PollEvent(&event);
-//     switch (event.type) {
-//         case SDL_QUIT:
-//             isRunning = false;
-//             break;
-//         default:
-//             break;
-//     }
-// }
+        isRunning = true;
+    } else {
+        isRunning = false;
+    }
+}
+void Menu::handleEvents() {
+    SDL_PollEvent(&event);
+    switch (event.type) {
+        case SDL_QUIT:
+            isRunning = false;
+            break;
+        case SDL_KEYDOWN:
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
+                Menu::gameRunning = false;
+                Menu::game->clean();
+                mainMenu->init();
+            }
+            break;
+        case SDL_KEYUP:
+            if (event.key.keysym.sym == SDLK_RETURN) {
+                enterPressed = false;
+            }
+    }
+}
 
-// void Menu::update() {
-// }
+void Menu::update() {
+    if (gameRunning) {
+        game->update();
+        return;
+    }
 
-// void Menu::render() {
-//     SDL_SetRenderDrawColor(renderer, 42, 41, 62, 255);
-//     SDL_RenderClear(renderer);
+    if (!enterPressed) {
+        mainMenu->handleKeyboard();
+        mainMenu->update();
 
-//     play->draw();
-//     quit->draw();
+        levelSelection->handleKeyboard();
+        levelSelection->update();
 
-//     SDL_RenderPresent(renderer);
-// }
+        scoreboard->handleKeyboard();
+        scoreboard->update();
 
-// void Menu::clean() {
-//     SDL_DestroyWindow(window);
-//     SDL_DestroyRenderer(renderer);
-//     SDL_Quit();
-//     std::cout << "Menu quit successfully!" << std::endl;
-// }
+        chooseName->handleKeyboard();
+        chooseName->update();
+    }
+}
 
-// bool Menu::running() {
-//     return isRunning;
-// }
+void Menu::render() {
+    if (gameRunning) {
+        game->render();
+        return;
+    }
+    SDL_SetRenderDrawColor(Menu::renderer, 42, 41, 62, 255);
+    SDL_RenderClear(Menu::renderer);
+
+    mainMenu->render();
+    levelSelection->render();
+    scoreboard->render();
+    chooseName->render();
+
+    SDL_RenderPresent(Menu::renderer);
+}
+
+bool Menu::running() {
+    return isRunning;
+}
+
+void Menu::clean() {
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
+}

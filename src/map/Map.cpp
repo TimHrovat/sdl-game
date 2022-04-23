@@ -2,7 +2,9 @@
 #include "../ECS/Components.h"
 #include "../textureManager/TextureManager.h"
 
-Map::Map() {
+using namespace std;
+
+Map::Map(int level) {
     // ground = TextureManager::LoadTexture((char *)"../assets/background/ground.png");
 
     for (int i = 0; i < 3; i++) {
@@ -11,40 +13,36 @@ Map::Map() {
         }
     }
 
-    Game::AddTile(0, 300, 400, 300, 20);
-    Game::AddTile(0, 400, 50, 300, 20);
-    Game::AddTile(0, 200, -300, 300, 20);
-    Game::AddTile(0, 900, -200, 300, 20);
-    Game::AddTile(0, 800, 200, 500, 20);
-    Game::AddTile(0, 1500, 50, 400, 20);
-    Game::AddTile(0, 1900, 300, 400, 20);
-    Game::AddTile(0, 2200, -50, 300, 20);
-    Game::AddTile(0, 2400, 400, 300, 20);
-    Game::AddTile(0, 2600, -250, 100, 20);
-    Game::AddTile(0, 900, -50, 300, 20);
-    Game::AddTile(0, 1300, 400, 400, 20);
-    Game::AddTile(0, 1800, -200, 300, 20);
-
-    addAnimals();
-    addEnemies();
+    LoadMap(level);
 }
 
-void Map::addAnimals() {
-    Game::AddAnimal(300, 400);
-    Game::AddAnimal(250, -300);
-    Game::AddAnimal(1000, -200);
-    Game::AddAnimal(1500, 400);
-    Game::AddAnimal(1600, 50);
-    Game::AddAnimal(1800, -200);
-    Game::AddAnimal(2600, -250);
-}
+void Map::LoadMap(int level) {
+    Platform temp;
+    char *filename;
+    switch (level) {
+        case 1:
+            filename = "assets/levels/level_1.bin";
+            break;
+        case 2:
+            filename = "assets/levels/level_2.bin";
+            break;
+        case 3:
+            filename = "assets/levels/level_3.bin";
+            break;
+    }
+    ifstream data(filename, ios::binary);
 
-void Map::addEnemies() {
-    Game::AddEnemy(300, 400, 300);
-    Game::AddEnemy(800, 200, 500);
-    Game::AddEnemy(900, -50, 300);
-    Game::AddEnemy(200, -300, 300);
-    Game::AddEnemy(2000, 300, 300);
-    Game::AddEnemy(2200, -50, 300);
-    Game::AddEnemy(1800, -200, 300);
+    if (data.is_open()) {
+        while (data.read((char *)&temp, sizeof(temp))) {
+            Game::AddTile(0, temp.x, temp.y, temp.w, temp.h);
+            if (temp.hasEnemy)
+                Game::AddEnemy(temp.x, temp.y, temp.w);
+            if (temp.hasAnimal)
+                Game::AddAnimal(temp.animalXPos, temp.y);
+        }
+    } else {
+        std::cout << "MAP LOAD FAILED" << std::endl;
+    }
+
+    data.close();
 }
