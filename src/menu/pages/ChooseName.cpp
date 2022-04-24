@@ -12,7 +12,7 @@ void ChooseName::init() {
 void ChooseName::handleKeyboard() {
     if (active) {
         if (Menu::event.type == SDL_KEYDOWN) {
-            if (!Menu::enterPressed)
+            if (!Menu::enterPressed && newPlayerName.size() >= 3)
                 switch (Menu::event.key.keysym.sym) {
                     case SDLK_RETURN:
                         Menu::currentPlayerName = newPlayerName;

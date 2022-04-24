@@ -9,12 +9,12 @@
 
 class Text;
 
-struct TextTemplate {
-    char text[31];
-    int x, y;
-    int w, h;
-    int size;
-};
+// struct TextTemplate {
+//     char text[31];
+//     int x, y;
+//     int w, h;
+//     int size;
+// };
 
 class Page {
   protected:

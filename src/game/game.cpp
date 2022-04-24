@@ -378,13 +378,16 @@ void Game::ReplayUpdate() {
 }
 
 void Game::Replay() {
+    datain.open("assets/replay/replay.bin", std::ios::binary);
+    if (datain.is_open()) {
+        replayAvalible = true;
+    }
     if (!replayAvalible) {
         Menu::mainMenu->setActive(true);
         return;
     }
     replayRunning = true;
     Menu::gameRunning = true;
-    datain.open("assets/replay/replay.bin", std::ios::binary);
     std::ifstream dlevel("assets/replay/level.txt");
     int lvl;
     dlevel >> lvl;

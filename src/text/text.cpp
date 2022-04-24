@@ -62,7 +62,7 @@ void Text::update(const char *newText) {
     if (center) {
         rect.x = 540 - rect.w / 2;
     }
-    std::cout << SDL_GetError() << std::endl;
+    // std::cout << SDL_GetError() << std::endl;
 }
 
 void Text::updateScoreboard(const char *newText, bool name, bool time) {
@@ -77,7 +77,7 @@ void Text::updateScoreboard(const char *newText, bool name, bool time) {
     } else if (time) {
         rect.x = 720 - rect.w;
     }
-    std::cout << SDL_GetError() << std::endl;
+    // std::cout << SDL_GetError() << std::endl;
 }
 
 void Text::changeColorBrightness(int b) {

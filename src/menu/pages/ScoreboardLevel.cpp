@@ -41,7 +41,15 @@ void ScoreboardLevel::update(int level) {
             if (!(data.read((char *)&temp, sizeof(temp))))
                 break;
         }
-        std::string time = std::to_string(temp.time / 60) + ":" + std::to_string(temp.time % 60);
+
+        std::string time;
+        if (temp.time / 60 < 10)
+            time = "0";
+        time += std::to_string(temp.time / 60) + ":";
+        if (temp.time % 60 < 10)
+            time += "0";
+        time += std::to_string(temp.time % 60);
+
         std::string name = temp.name;
         if (i % 2 == 0)
             texts[i]->updateScoreboard(name.c_str(), true, false);
