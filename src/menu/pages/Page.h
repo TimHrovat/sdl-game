@@ -40,6 +40,7 @@ class MainMenu : public Page {
     void init();
     void handleKeyboard();
     void handleSelection();
+    void update() override;
 };
 
 class LevelSelection : public Page {
@@ -49,21 +50,31 @@ class LevelSelection : public Page {
     void handleSelection();
 };
 
+class ScoreboardLevel : public Page {
+  public:
+    void init();
+    void handleKeyboard();
+    void update(int level);
+    void handleSelection();
+};
+
 class Scoreboard : public Page {
   public:
     void init();
     void handleKeyboard();
-    void update() override;
-    void render() override;
+    void handleSelection();
 };
 
 class ChooseName : public Page {
   private:
-    std::string newPlayerName;
+    bool shiftPressed = false;
+    bool backspacePressed = false;
+    std::string newPlayerName = "";
 
   public:
     void init();
     void handleKeyboard();
     void update() override;
     void render() override;
+    void handleSelection();
 };

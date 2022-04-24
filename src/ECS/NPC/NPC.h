@@ -17,14 +17,14 @@ class NPC : public Component {
     bool isActive = true;
     bool rotate = false;
     std::string tag;
-    Vector2D position;
-    float deltaPos = 0;
     float maxDelta;
 
     void registerEnemy();
     void registerAnimal();
 
   public:
+    Vector2D position;
+    int deltaPos = 0;
     NPC(){};
     ~NPC(){};
 

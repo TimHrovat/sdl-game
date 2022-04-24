@@ -38,7 +38,7 @@ void LevelSelection::handleKeyboard() {
 
 void LevelSelection::handleSelection() {
     Menu::gameRunning = true;
-    Menu::game->init(selection + 1);
+    Menu::game->init(selection + 1, false);
 
     active = false;
 }

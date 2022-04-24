@@ -11,6 +11,7 @@
 class KeyboardHandler : public Component {
 
   public:
+    bool isActive = true;
     bool inJump = false;
     TransformComponent *transform;
     SpriteComponent *sprite;
@@ -23,41 +24,43 @@ class KeyboardHandler : public Component {
     }
 
     void update() override {
-        if (Menu::event.type == SDL_KEYDOWN) {
-            switch (Menu::event.key.keysym.sym) {
-                case SDLK_w:
-                    if (!inJump) {
-                        transform->velocity.y = -3;
-                        inJump = true;
-                    }
-                    break;
-                case SDLK_s:
-                    break;
-                case SDLK_a:
-                    transform->velocity.x = -1.3;
-                    break;
-                case SDLK_d:
-                    transform->velocity.x = 1.3;
-                    break;
-                default:
-                    break;
+        if (isActive) {
+            if (Menu::event.type == SDL_KEYDOWN) {
+                switch (Menu::event.key.keysym.sym) {
+                    case SDLK_w:
+                        if (!inJump) {
+                            transform->velocity.y = -3;
+                            inJump = true;
+                        }
+                        break;
+                    case SDLK_s:
+                        break;
+                    case SDLK_a:
+                        transform->velocity.x = -1.3;
+                        break;
+                    case SDLK_d:
+                        transform->velocity.x = 1.3;
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
 
-        if (Menu::event.type == SDL_KEYUP) {
-            switch (Menu::event.key.keysym.sym) {
-                case SDLK_w:
-                    break;
-                case SDLK_s:
-                    break;
-                case SDLK_a:
-                    transform->velocity.x = 0;
-                    break;
-                case SDLK_d:
-                    transform->velocity.x = 0;
-                    break;
-                default:
-                    break;
+            if (Menu::event.type == SDL_KEYUP) {
+                switch (Menu::event.key.keysym.sym) {
+                    case SDLK_w:
+                        break;
+                    case SDLK_s:
+                        break;
+                    case SDLK_a:
+                        transform->velocity.x = 0;
+                        break;
+                    case SDLK_d:
+                        transform->velocity.x = 0;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

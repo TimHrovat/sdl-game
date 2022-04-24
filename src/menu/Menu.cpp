@@ -7,12 +7,13 @@ SDL_Renderer *Menu::renderer = NULL;
 SDL_Event Menu::event;
 Game *Menu::game = new Game();
 bool Menu::gameRunning = false;
-std::string Menu::currentPlayerName;
+std::string Menu::currentPlayerName = "player 1";
 
 MainMenu *Menu::mainMenu = new MainMenu();
 LevelSelection *Menu::levelSelection = new LevelSelection();
 Scoreboard *Menu::scoreboard = new Scoreboard();
 ChooseName *Menu::chooseName = new ChooseName();
+ScoreboardLevel *Menu::levelScores = new ScoreboardLevel();
 
 void Menu::init(const char *title, int xpos, int ypos, int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
@@ -38,7 +39,7 @@ void Menu::init(const char *title, int xpos, int ypos, int width, int height) {
             std::cout << "Renderer successfully created!" << std::endl;
         }
 
-        mainMenu->init();
+        chooseName->init();
 
         isRunning = true;
     } else {
@@ -53,9 +54,15 @@ void Menu::handleEvents() {
             break;
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_ESCAPE) {
-                Menu::gameRunning = false;
-                Menu::game->clean();
+                if (Menu::gameRunning) {
+                    Menu::gameRunning = false;
+                    Menu::game->clean();
+                }
                 mainMenu->init();
+                levelSelection->setActive(false);
+                levelScores->setActive(false);
+                scoreboard->setActive(false);
+                chooseName->setActive(false);
             }
             break;
         case SDL_KEYUP:
@@ -98,6 +105,7 @@ void Menu::render() {
     levelSelection->render();
     scoreboard->render();
     chooseName->render();
+    levelScores->render();
 
     SDL_RenderPresent(Menu::renderer);
 }

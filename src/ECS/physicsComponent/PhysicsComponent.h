@@ -19,6 +19,7 @@ class PhysicsComponent : public Component {
     float gravity = 0.2f;
 
   public:
+    bool isActive = true;
     PhysicsComponent(){};
     ~PhysicsComponent(){};
 

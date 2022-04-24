@@ -14,6 +14,7 @@ class Page;
 class MainMenu;
 class LevelSelection;
 class Scoreboard;
+class ScoreboardLevel;
 class ChooseName;
 
 class Menu {
@@ -45,5 +46,6 @@ class Menu {
     static LevelSelection *levelSelection;
     static Scoreboard *scoreboard;
     static ChooseName *chooseName;
+    static ScoreboardLevel *levelScores;
     static bool enterPressed;
 };
