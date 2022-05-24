@@ -22,9 +22,9 @@ void NPC::update() {
     // movement for enemies
     if (tag.compare("enemy") == 0) {
         if (deltaPos >= maxDelta) {
-            transform->velocity.x = -3;
+            transform->velocity.x = -5;
         } else if (deltaPos <= 0) {
-            transform->velocity.x = 3;
+            transform->velocity.x = 5;
         }
 
         deltaPos += transform->velocity.x;

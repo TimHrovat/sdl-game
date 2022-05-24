@@ -89,7 +89,7 @@ void MainMenu::update() {
             chr[i] = Menu::currentPlayerName[i];
         chr[Menu::currentPlayerName.size()] = '\0';
 
-        puts(chr);
+        // puts(chr);
         texts[7]->update(chr);
     }
 }
